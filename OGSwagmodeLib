@@ -1,0 +1,323 @@
+local Library = {}
+function Library:CreateMain()
+    local swagmode = Instance.new("ScreenGui")
+    local MainFrame = Instance.new("Frame")
+    local Title = Instance.new("TextLabel")
+    local ScrollingFrame = Instance.new("ScrollingFrame")
+    local UIListLayout = Instance.new("UIListLayout")
+    
+    local TargetTextbox = Instance.new("TextBox")
+    local OpenDebug = Instance.new("TextButton")
+    local DebugFrame = Instance.new("Frame")
+    local DebugTitle = Instance.new("TextLabel")
+    local ControlsFrame = Instance.new("Frame")
+    local CUIListLayout = Instance.new("UIListLayout")
+    local Controls = Instance.new("TextLabel")
+    local CUIListLayout_3 = Instance.new("UIListLayout")
+    local UpdatesFrame = Instance.new("Frame")
+    local CUIListLayout_2 = Instance.new("UIListLayout")
+    local Updates = Instance.new("TextLabel")
+    local UIUpdatesFrame = Instance.new("Frame")
+    local DebugTitle_2 = Instance.new("TextLabel")
+    local UIUpdates = Instance.new("TextLabel")
+    
+    
+    swagmode.Name = "swagmode"
+    swagmode.Parent = game:GetService('CoreGui')
+    swagmode.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    MainFrame.Name = "MainFrame"
+    MainFrame.Parent = swagmode
+    MainFrame.BackgroundColor3 = Color3.fromRGB(86, 173, 255)
+    MainFrame.BorderSizePixel = 0
+    MainFrame.Position = UDim2.new(0.735274017, 0, 0.326053053, 0)
+    MainFrame.Size = UDim2.new(0, 252, 0, 326)
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+    
+    Title.Name = "Title"
+    Title.Parent = MainFrame
+    Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Title.BackgroundTransparency = 1.000
+    Title.Size = UDim2.new(0, 252, 0, 30)
+    Title.Font = Enum.Font.Highway
+    Title.Text = "Swag Mode - Put together by yahyeee#7643"
+    Title.TextColor3 = Color3.fromRGB(0, 0, 0)
+    Title.TextSize = 13.000
+    
+    ScrollingFrame.Parent = MainFrame
+    ScrollingFrame.Active = true
+    ScrollingFrame.BackgroundColor3 = Color3.fromRGB(72, 145, 218)
+    ScrollingFrame.Position = UDim2.new(0.0436507948, 0, 0.0920245424, 0)
+    ScrollingFrame.Size = UDim2.new(0, 229, 0, 246)
+    ScrollingFrame.ScrollBarThickness = 5
+    
+    UIListLayout.Parent = ScrollingFrame
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    
+    TargetTextbox.Name = "TargetTextbox"
+    TargetTextbox.Parent = MainFrame
+    TargetTextbox.BackgroundColor3 = Color3.fromRGB(103, 103, 103)
+    TargetTextbox.Position = UDim2.new(0.0436507948, 0, 0.865030646, 0)
+    TargetTextbox.Size = UDim2.new(0, 229, 0, 38)
+    TargetTextbox.Font = Enum.Font.Highway
+    TargetTextbox.PlaceholderColor3 = Color3.fromRGB(0, 0, 0)
+    TargetTextbox.PlaceholderText = "TextBox"
+    TargetTextbox.Text = ""
+    TargetTextbox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TargetTextbox.TextScaled = true
+    TargetTextbox.TextSize = 14.000
+    TargetTextbox.TextWrapped = true
+    TargetTextbox.TextXAlignment = Enum.TextXAlignment.Left
+    
+    OpenDebug.Name = "OpenDebug"
+    OpenDebug.Parent = MainFrame
+    OpenDebug.BackgroundColor3 = Color3.fromRGB(103, 177, 2)
+    OpenDebug.Position = UDim2.new(0.285714298, 0, -0.0460122712, 0)
+    OpenDebug.Size = UDim2.new(0, 99, 0, 15)
+    OpenDebug.Font = Enum.Font.SourceSans
+    OpenDebug.Text = "Open debug menu"
+    OpenDebug.TextColor3 = Color3.fromRGB(0, 0, 0)
+    OpenDebug.TextSize = 14.000
+    
+    DebugFrame.Name = "DebugFrame"
+    DebugFrame.Parent = swagmode
+    DebugFrame.BackgroundColor3 = Color3.fromRGB(86, 173, 255)
+    DebugFrame.Position = UDim2.new(0.12033511, 0, 0.16536662, 0)
+    DebugFrame.Size = UDim2.new(0, 482, 0, 254)
+    DebugFrame.Visible = false
+    DebugFrame.Active = true
+    DebugFrame.Draggable = true
+    
+    DebugTitle.Name = "DebugTitle"
+    DebugTitle.Parent = DebugFrame
+    DebugTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    DebugTitle.BackgroundTransparency = 1.000
+    DebugTitle.Position = UDim2.new(0.263485491, 0, 0.0354330726, 0)
+    DebugTitle.Size = UDim2.new(0, 222, 0, 30)
+    DebugTitle.Font = Enum.Font.Highway
+    DebugTitle.Text = "Swag Mode - debug menu"
+    DebugTitle.TextColor3 = Color3.fromRGB(0, 0, 0)
+    DebugTitle.TextSize = 13.000
+    
+    ControlsFrame.Name = "ControlsFrame"
+    ControlsFrame.Parent = DebugFrame
+    ControlsFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ControlsFrame.BackgroundTransparency = 0.700
+    ControlsFrame.Position = UDim2.new(0.0373443961, 0, 0.216535434, 0)
+    ControlsFrame.Size = UDim2.new(0, 138, 0, 170)
+    
+    CUIListLayout.Name = "CUIListLayout"
+    CUIListLayout.Parent = ControlsFrame
+    CUIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    CUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    CUIListLayout.Padding = UDim.new(0, 10)
+
+    Controls.Name = "Controls"
+    Controls.Parent = ControlsFrame
+    Controls.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Controls.BackgroundTransparency = 1.000
+    Controls.Position = UDim2.new(0.0942028984, 0, 0, 0)
+    Controls.Size = UDim2.new(0, 125, 0, 19)
+    Controls.Font = Enum.Font.Highway
+    Controls.Text = "Controls"
+    Controls.TextColor3 = Color3.fromRGB(0, 0, 0)
+    Controls.TextSize = 13.000
+    UpdatesFrame.Name = "UpdatesFrame"
+    
+    UpdatesFrame.Parent = DebugFrame
+    UpdatesFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    UpdatesFrame.BackgroundTransparency = 0.700
+    UpdatesFrame.Position = UDim2.new(0.354771793, 0, 0.216535434, 0)
+    UpdatesFrame.Size = UDim2.new(0, 140, 0, 170)
+    
+    DebugTitle_2.Name = "DebugTitle"
+    DebugTitle_2.Parent = DebugFrame
+    DebugTitle_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    DebugTitle_2.BackgroundTransparency = 1.000
+    DebugTitle_2.Position = UDim2.new(0.311203331, 0, 0.885826766, 0)
+    DebugTitle_2.Size = UDim2.new(0, 182, 0, 30)
+    DebugTitle_2.Font = Enum.Font.Highway
+    DebugTitle_2.Text = "Credits, yahyeee#7643 & Lu?#7643"
+    DebugTitle_2.TextColor3 = Color3.fromRGB(0, 0, 0)
+    DebugTitle_2.TextSize = 13.000
+        
+    UIUpdatesFrame.Name = "UI UpdatesFrame"
+    UIUpdatesFrame.Parent = DebugFrame
+    UIUpdatesFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    UIUpdatesFrame.BackgroundTransparency = 0.700
+    UIUpdatesFrame.Position = UDim2.new(0.680497944, 0, 0.216535434, 0)
+    UIUpdatesFrame.Size = UDim2.new(0, 140, 0, 170)
+    
+    UIUpdates.Name = "UI Updates"
+    UIUpdates.Parent = UIUpdatesFrame
+    UIUpdates.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    UIUpdates.BackgroundTransparency = 1.000
+    UIUpdates.Position = UDim2.new(0.18928571, 0, 0, 0)
+    UIUpdates.Size = UDim2.new(0, 113, 0, 19)
+    UIUpdates.Font = Enum.Font.Highway
+    UIUpdates.Text = "UI Updates"
+    UIUpdates.TextColor3 = Color3.fromRGB(0, 0, 0)
+    UIUpdates.TextSize = 13.000
+    
+    CUIListLayout_3.Name = "CUIListLayout"
+    CUIListLayout_3.Parent = UIUpdatesFrame
+    CUIListLayout_3.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    CUIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
+    CUIListLayout_3.Padding = UDim.new(0, 10)
+    
+    CUIListLayout_2.Name = "CUIListLayout"
+    CUIListLayout_2.Parent = UpdatesFrame
+    CUIListLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    CUIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
+    CUIListLayout_2.Padding = UDim.new(0, 10)
+    
+    Updates.Name = "Updates"
+    Updates.Parent = UpdatesFrame
+    Updates.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Updates.BackgroundTransparency = 1.000
+    Updates.Position = UDim2.new(0.18928571, 0, 0, 0)
+    Updates.Size = UDim2.new(0, 113, 0, 19)
+    Updates.Font = Enum.Font.Highway
+    Updates.Text = "Updates"
+    Updates.TextColor3 = Color3.fromRGB(0, 0, 0)
+    Updates.TextSize = 13.000
+    local contentsize = ScrollingFrame:FindFirstChildOfClass('UIListLayout').AbsoluteContentSize
+    ScrollingFrame.CanvasSize = UDim2.new(0,contentsize.X,0,contentsize.Y)
+    
+    OpenDebug.MouseButton1Click:Connect(function()
+        if DebugFrame.Visible == false then
+            DebugFrame.Visible = true
+            OpenDebug.Text = 'Close debug menu'
+        else
+            DebugFrame.Visible = false
+            OpenDebug.Text = 'Open debug menu'
+        end
+    end)
+    
+    game:GetService('UserInputService').InputBegan:Connect(function(key,b)
+        if key.KeyCode == Enum.KeyCode.V and not b then
+            if MainFrame.Visible == false then
+                MainFrame.Visible = false
+                DebugFrame.Visible = false
+                OpenDebug.Text = 'Open debug menu'
+            else
+                MainFrame.Visible = true
+            end
+        end
+    end)
+    
+    function ShrinkName()
+        TargetTextbox.FocusLost:connect(function()
+            for i,v in pairs(game.Players:GetChildren()) do
+                if (string.sub(string.lower(v.Name),1,string.len(TargetTextbox.Text))) == string.lower(TargetTextbox.Text) then
+                    TargetTextbox.Text = v.Name
+                    SetPlayerInfo()
+                end
+            end
+        end)
+    end
+    ShrinkName()
+    
+    local function GetTarget()
+        return game.Players:FindFirstChild(TargetTextbox.Text)
+    end
+        
+    local Glib = {}
+    function Glib:NewButton(Name, Action)
+        local Button = Instance.new("TextButton")
+        Button.Name = Name or 'Blank'
+        Button.Text = Name or 'Blank'
+        Button.Parent = ScrollingFrame
+        Button.BackgroundColor3 = Color3.fromRGB(72, 144, 215)
+        Button.Position = UDim2.new(0, 0, -6.20275955e-08, 0)
+        Button.Size = UDim2.new(0, 222, 0, 33)
+        Button.Font = Enum.Font.TitilliumWeb
+        Button.TextColor3 = Color3.fromRGB(0, 0, 0)
+        Button.TextScaled = true
+        Button.TextSize = 23.000
+        Button.TextWrapped = true
+        Button.TextYAlignment = Enum.TextYAlignment.Top
+        Button.MouseButton1Click:Connect(Action)
+        local contentsize = ScrollingFrame:FindFirstChildOfClass('UIListLayout').AbsoluteContentSize
+        ScrollingFrame.CanvasSize = UDim2.new(0,contentsize.X,0,contentsize.Y)
+    end
+    function Glib:NewToggle(Name, Action)
+        local Toggle = Instance.new("TextButton")
+        Toggle.Name = Name or 'Blank'
+        Toggle.Parent = ScrollingFrame
+        Toggle.BackgroundColor3 = Color3.fromRGB(72, 144, 215)
+        Toggle.Position = UDim2.new(0, 0, -6.20275955e-08, 0)
+        Toggle.Size = UDim2.new(0, 222, 0, 33)
+        Toggle.Font = Enum.Font.TitilliumWeb
+        Toggle.Text = Name .. " (Off)" or "Toggle (Off)"
+        Toggle.TextColor3 = Color3.fromRGB(0, 0, 0)
+        Toggle.TextScaled = true
+        Toggle.TextSize = 23.000
+        Toggle.TextWrapped = true
+        Toggle.TextYAlignment = Enum.TextYAlignment.Top
+        Toggle.MouseButton1Click:Connect(function()
+            if Toggle.Text == Name .. ' (Off)' then
+                Toggle.Text = Name .. ' (On)'
+                while Toggle.Text == Name .. ' (On)' do
+                    game:GetService('RunService').Heartbeat:Wait()
+                    pcall(Action)
+                end
+            else
+                Toggle.Text = Name .. ' (Off)'
+            end
+        end)
+        local contentsize = ScrollingFrame:FindFirstChildOfClass('UIListLayout').AbsoluteContentSize
+        ScrollingFrame.CanvasSize = UDim2.new(0,contentsize.X,0,contentsize.Y)
+    end
+    function Glib:NewControl(TEXT)
+        local Controls_New = Instance.new("TextLabel")
+        Controls_New.Name = "Controls_New"
+        Controls_New.Parent = ControlsFrame
+        Controls_New.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Controls_New.BackgroundTransparency = 1.000
+        Controls_New.Position = UDim2.new(0.0942028984, 0, 0, 0)
+        Controls_New.Size = UDim2.new(0, 125, 0, 19)
+        Controls_New.Font = Enum.Font.Highway
+        Controls_New.Text = TEXT or "No Text Provided"
+        Controls_New.TextColor3 = Color3.fromRGB(0, 0, 0)
+        Controls_New.TextSize = 13.000
+    end
+    function Glib:NewUIUpdate(TEXT)
+        local Updates_New = Instance.new("TextLabel")
+        UIUpdates_New.Name = "UI Updates_New"
+        UIUpdates_New.Parent = UIUpdatesFrame
+        UIUpdates_New.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        UIUpdates_New.BackgroundTransparency = 1.000
+        UIUpdates_New.Position = UDim2.new(0.18928571, 0, 0, 0)
+        UIUpdates_New.Size = UDim2.new(0, 113, 0, 19)
+        UIUpdates_New.Font = Enum.Font.Highway
+        UIUpdates_New.Text = TEXT or "No Text Provided"
+        UIUpdates_New.TextColor3 = Color3.fromRGB(0, 0, 0)
+        UIUpdates_New.TextSize = 13.000
+    end
+    function Glib:NewUpdate(TEXT)
+        local Updates_New = Instance.new("TextLabel")
+        Updates_New.Name = "Updates_New"
+        Updates_New.Parent = UpdatesFrame
+        Updates_New.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Updates_New.BackgroundTransparency = 1.000
+        Updates_New.Position = UDim2.new(0.18928571, 0, 0, 0)
+        Updates_New.Size = UDim2.new(0, 113, 0, 19)
+        Updates_New.Font = Enum.Font.Highway
+        Updates_New.Text = TEXT or 'No Text Provided'
+        Updates_New.TextColor3 = Color3.fromRGB(0, 0, 0)
+        Updates_New.TextSize = 13.000
+    end
+    return Glib;
+end
+return Library;
+
+
+
+
+
+
+
+
+

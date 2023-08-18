@@ -1,0 +1,7 @@
+pcall(function()
+    game.StarterGui:SetCore("SendNotification", {
+        Title = 'Crash Patched 4Ever';
+        Text = 'discord.gg/swagmode';
+        Duration = 20;
+    })
+end)

@@ -1,0 +1,996 @@
+--[[ 
+- Features
+ Automatic dupe system with save system
+ req: synapse
+]]
+
+-- Note : all scripted by me [ Lerk#7643 / owner of this github ] #besides the NL function, stole that from IY
+-- Note 2 :  THIS IS A WORK IN PROGRESS, WHAT IS SHOWN IS NOT COMPLETE WORK
+
+if not game:IsLoaded() then game.Loaded:Wait() end
+if getgenv().Enabled == true then
+    local Player = game.Players.LocalPlayer
+    if not Player.Character then Player.CharacterAdded:Wait() end
+    local Dropping = false
+    
+    function announce(title,text,time)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = title;
+            Text = text;
+            Duration = time;
+        })
+    end
+
+    if syn then
+        if isfolder("DupeData") then  
+            -- \\ Ignore
+        else
+            makefolder("DupeData") 
+        end
+    end
+    
+        local DUPERS = {}
+        local DATA = {
+            Dupers = '',
+            CrashAt = 50000,
+            Crasher = 'nil',
+            CrashAfter = 9999999999,
+            GFX = 'LowGFX',
+            FPS = 15,
+        }
+        if syn then
+            if not isfile('DupeData/DuperList.txt') then 
+                writefile("DupeData/DuperList.txt", "nil/nil") 
+            end
+            DATA.Dupers = tostring(readfile("DupeData/DuperList.txt"))
+            if not isfile('DupeData/CrashAtCash.txt') then 
+                writefile("DupeData/CrashAtCash.txt", "50000") 
+            end
+            DATA.CrashAt = tonumber(readfile("DupeData/CrashAtCash.txt"))
+            if not isfile('DupeData/Crasher.txt') then 
+                writefile("DupeData/Crasher.txt", "nil")
+            end
+            DATA.Crasher = tostring(readfile("DupeData/Crasher.txt"))
+            if not isfile('DupeData/CrashAfter.txt') then 
+                writefile("DupeData/CrashAfter.txt", "999999999999") 
+            end
+            DATA.CrashAfter = tonumber(readfile("DupeData/CrashAfter.txt"))
+            if not isfile('DupeData/GFX.txt') then 
+                writefile("DupeData/GFX.txt", "LowGFX") 
+            end
+            DATA.GFX = tostring(readfile("DupeData/GFX.txt"))
+            if not isfile('DupeData/FPS.txt') then 
+                writefile("DupeData/FPS.txt", "FPS") 
+            end
+            DATA.FPS = tonumber(readfile("DupeData/FPS.txt"))
+        end
+        
+        local DupersTable = DATA.Dupers:split('/')
+        for i,v in pairs(DupersTable) do
+            table.insert(DUPERS, v)
+        end
+        
+        print('DATA LOADED --------')
+        print(tostring(DATA.CrashAt))
+        print(tostring(DATA.Crasher))
+        print(tostring(DATA.CrashAfter))
+        print(tostring(DATA.GFX))
+        print(tostring(DATA.FPS))
+        print('DUPERS  -----------')
+        for i,v in pairs(DUPERS) do
+            print(v)
+        end
+        print('----------------------')
+    
+    if table.find(DUPERS, Player.Name) then
+        Dropping = true
+    elseif table.find(DUPERS, Player.UserId) then
+        Dropping = true
+    end
+    
+    if Dropping then
+        UserSettings():GetService("UserGameSettings").MasterVolume = 0/10
+        
+        local CrashButton = Instance.new("ScreenGui")
+        local TextButton = Instance.new("TextButton")
+    
+        CrashButton.Name = "CrashButton"
+        CrashButton.Parent = game.CoreGui
+        CrashButton.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        
+        TextButton.Parent = CrashButton
+        TextButton.BackgroundColor3 = Color3.fromRGB(102, 102, 102)
+        TextButton.Position = UDim2.new(0.377055228, 0, 0.232277542, 0)
+        TextButton.Size = UDim2.new(0, 308, 0, 50)
+        TextButton.Font = Enum.Font.SourceSans
+        TextButton.Text = "CRASH SERVER"
+        TextButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+        TextButton.TextScaled = true
+        TextButton.TextSize = 14.000
+        TextButton.TextWrapped = true
+        TextButton.MouseButton1Click:Connect(function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/lerkermer/lua-projects/master/SuperCustomServerCrasher'))()
+        end)
+    
+        Player.Character.HumanoidRootPart.CFrame = CFrame.new(getgenv().DropLocation)
+
+        local Crashing = false
+        if Player.Name == DATA.Crasher or Player.UserId == DATA.Crasher then
+            Crashing = true
+        end
+        
+        coroutine.resume(coroutine.create(function()
+            while wait(10) do
+                pcall(function()
+                    for i,v in pairs(game:GetService("Workspace").Ignored.Drop:GetChildren()) do
+                        if v.Name == 'MoneyDrop' then
+                            v:Destroy()
+                        end
+                    end
+                end)
+            end     
+        end))
+        coroutine.resume(coroutine.create(function()
+            while wait(2.5) do
+                pcall(function()
+                    if (getgenv().DropLocation - Player.Character.HumanoidRootPart.Position).Magnitude > 20 then
+                        Player.Character.HumanoidRootPart.CFrame = CFrame.new(getgenv().DropLocation)
+                    end
+                    if Crashing == true then
+                        if Player.DataFolder.Currency.Value <= DATA.CrashAt then
+                            TextButton:Destroy()
+                            loadstring(game:HttpGet('https://raw.githubusercontent.com/lerkermer/lua-projects/master/SuperCustomServerCrasher'))()
+                            wait(math.huge)
+                        end
+                    end
+                    local DropAm = 10000
+                    if Player.DataFolder.Currency.Value > 10000 then
+                        DropAm = '10000'
+                    else
+                        DropAm = tostring(Player.DataFolder.Currency.Value)
+                    end
+                    local args = {
+                        'DropMoney',
+                        DropAm
+                    }
+                    game.ReplicatedStorage:WaitForChild('MainEvent'):FireServer(unpack(args))
+                end)
+            end     
+        end))
+        coroutine.resume(coroutine.create(function()
+            wait(DATA.CrashAfter)
+            TextButton:Destroy()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/lerkermer/lua-projects/master/SuperCustomServerCrasher'))()
+        end))
+
+        local function NL()
+            workspace:FindFirstChildOfClass('Terrain').WaterWaveSize = 0
+        	workspace:FindFirstChildOfClass('Terrain').WaterWaveSpeed = 0
+        	workspace:FindFirstChildOfClass('Terrain').WaterReflectance = 0
+        	workspace:FindFirstChildOfClass('Terrain').WaterTransparency = 0
+        	game:GetService("Lighting").GlobalShadows = false
+        	game:GetService("Lighting").FogEnd = 9e9
+        	settings().Rendering.QualityLevel = 1
+        	for i,v in pairs(game:GetDescendants()) do
+        		if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+        			v.Material = "Plastic"
+        			v.Reflectance = 0
+        		elseif v:IsA("Decal") then
+        			v.Transparency = 1
+        		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        			v.Lifetime = NumberRange.new(0)
+        		elseif v:IsA("Explosion") then
+        			v.BlastPressure = 1
+        			v.BlastRadius = 1
+        		end
+        	end
+        	for i,v in pairs(game:GetService("Lighting"):GetDescendants()) do
+        		if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+        			v.Enabled = false
+        		end
+        	end
+        end
+        
+        wait(1)
+        announce('Loading GFX Settings...')
+        wait(2)
+        if DATA.GFX == 'LowGFX' then
+            NL()
+        elseif DATA.GFX == 'ReallyLowGFX' then
+            NL()
+            if not Crashing then
+                game:GetService("RunService"):Set3dRenderingEnabled(false)
+                for i,v in pairs(game.Workspace:GetDescendants()) do
+                    pcall(function()
+                        if v:IsA('Part') or v:IsA('UnionOperation') or v:IsA('WedgePart') or v:IsA('MeshPart') then
+                            if v.Parent.Parent.Name ~= 'Shop' then
+                                if (getgenv().DropLocation - v.Position).Magnitude > 100 then
+                                    v:Destroy()
+                                end
+                            end
+                        end
+                    end)
+                end
+            end
+        end
+        setfpscap(DATA.FPS)
+    end
+    
+    if not Dropping then
+        local SimplySwag = Instance.new("ScreenGui")
+        local ExamplePage = Instance.new("Frame")
+        local Title = Instance.new("TextLabel")
+        local SubTitle = Instance.new("TextLabel")
+        local TopBar = Instance.new("Frame")
+        local SetUp = Instance.new("TextButton")
+        local UICorner = Instance.new("UICorner")
+        local Extra = Instance.new("TextButton")
+        local UICorner_2 = Instance.new("UICorner")
+        local DupersInfo = Instance.new("TextButton")
+        local UICorner_3 = Instance.new("UICorner")
+        local UIGridLayout = Instance.new("UIGridLayout")
+        local SetUpFrame = Instance.new("Frame")
+        local Textbox = Instance.new("TextBox")
+        local Add = Instance.new("TextButton")
+        local Remove = Instance.new("TextButton")
+        local ConfirmSettings = Instance.new("TextButton")
+        local UICorner_4 = Instance.new("UICorner")
+        local Fps = Instance.new("TextBox")
+        local FPSCAPTITLE = Instance.new("TextLabel")
+        local Frame = Instance.new("Frame")
+        local CrasherUsername = Instance.new("TextBox")
+        local CRASHERTITLE = Instance.new("TextLabel")
+        local CrashAtCash = Instance.new("TextBox")
+        local CRASHERTITLE_2 = Instance.new("TextLabel")
+        local CrashAfterSeconds = Instance.new("TextBox")
+        local CRASHERTITLE_3 = Instance.new("TextLabel")
+        local NormalGFX = Instance.new("TextButton")
+        local Enabled = Instance.new("ImageLabel")
+        local Disabled = Instance.new("ImageLabel")
+        local LowGFX = Instance.new("TextButton")
+        local Disabled_2 = Instance.new("ImageLabel")
+        local Enabled_2 = Instance.new("ImageLabel")
+        local ReallyLowGFX = Instance.new("TextButton")
+        local Disabled_3 = Instance.new("ImageLabel")
+        local Enabled_3 = Instance.new("ImageLabel")
+        local Decoration = Instance.new("Frame")
+        local AccountInfos = Instance.new("Frame")
+        local TextButton = Instance.new("TextButton")
+        local UICorner_5 = Instance.new("UICorner")
+        local ScrollingFrame = Instance.new("ScrollingFrame")
+        
+        local UIGridLayout_2 = Instance.new("UIGridLayout")
+        local HelpFrame = Instance.new("Frame")
+        local HelpMain = Instance.new("Frame")
+        local HelpTitle = Instance.new("TextLabel")
+        local HelpTitle_2 = Instance.new("TextLabel")
+        local HelpTitle_3 = Instance.new("TextLabel")
+        local HelpTitle_4 = Instance.new("TextLabel")
+        local HelpTitle_5 = Instance.new("TextLabel")
+        local ImageButton = Instance.new("ImageButton")
+        local UICorner_6 = Instance.new("UICorner")
+        local MainList = Instance.new("Frame")
+        local List = Instance.new("ScrollingFrame")
+        local UIListLayout = Instance.new("UIListLayout")
+        local TextButton_2 = Instance.new("TextButton")
+        
+        --Properties:
+        
+        SimplySwag.Name = "Simply, Swag"
+        SimplySwag.Parent = game.CoreGui
+        SimplySwag.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        
+        ExamplePage.Name = "ExamplePage"
+        ExamplePage.Parent = SimplySwag
+        ExamplePage.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+        ExamplePage.BorderSizePixel = 0
+        ExamplePage.Draggable = true
+        ExamplePage.Position = UDim2.new(0.607623219, -550, 0.222422285318, -112)
+        ExamplePage.Size = UDim2.new(0, 358, 0, 326)
+        ExamplePage.Active = true
+        ExamplePage.Draggable = true
+        
+        Title.Name = "Title"
+        Title.Parent = ExamplePage
+        Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Title.BackgroundTransparency = 1.000
+        Title.BorderSizePixel = 0
+        Title.Position = UDim2.new(0.139664799, 0, 0, 0)
+        Title.Size = UDim2.new(0, 258, 0, 41)
+        Title.Font = Enum.Font.GothamBold
+        Title.Text = "DH AutoDuper, "
+        Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Title.TextSize = 20.000
+        Title.TextXAlignment = Enum.TextXAlignment.Left
+        
+        SubTitle.Name = "SubTitle"
+        SubTitle.Parent = ExamplePage
+        SubTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        SubTitle.BackgroundTransparency = 1.000
+        SubTitle.BorderSizePixel = 0
+        SubTitle.Position = UDim2.new(0.544692695, 0, 0.0214723926, 0)
+        SubTitle.Size = UDim2.new(0, 113, 0, 34)
+        SubTitle.Font = Enum.Font.GothamBold
+        SubTitle.Text = "by Swag mode"
+        SubTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        SubTitle.TextSize = 15.000
+        SubTitle.TextXAlignment = Enum.TextXAlignment.Left
+        
+        TopBar.Name = "TopBar"
+        TopBar.Parent = ExamplePage
+        TopBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        TopBar.BackgroundTransparency = 1.000
+        TopBar.Position = UDim2.new(0, 0, 0.125766873, 0)
+        TopBar.Size = UDim2.new(0, 358, 0, 36)
+        
+        SetUp.Name = "SetUp"
+        SetUp.Parent = TopBar
+        SetUp.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        SetUp.Position = UDim2.new(0, 0, 0.125, 0)
+        SetUp.Size = UDim2.new(0, 87, 0, 39)
+        SetUp.Font = Enum.Font.GothamBlack
+        SetUp.Text = "Set Up"
+        SetUp.TextColor3 = Color3.fromRGB(255, 255, 255)
+        SetUp.TextSize = 14.000
+        
+        UICorner.Parent = SetUp
+        
+        Extra.Name = "Extra"
+        Extra.Parent = TopBar
+        Extra.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        Extra.Position = UDim2.new(0, 0, 0.125, 0)
+        Extra.Size = UDim2.new(0, 87, 0, 39)
+        Extra.AutoButtonColor = false
+        Extra.Font = Enum.Font.GothamBlack
+        Extra.Text = "Version 1.0000"
+        Extra.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Extra.TextSize = 14.000
+        
+        UICorner_2.Parent = Extra
+        
+        DupersInfo.Name = "DupersInfo"
+        DupersInfo.Parent = TopBar
+        DupersInfo.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        DupersInfo.Position = UDim2.new(0, 0, 0.125, 0)
+        DupersInfo.Size = UDim2.new(0, 87, 0, 39)
+        DupersInfo.Font = Enum.Font.GothamBlack
+        DupersInfo.Text = "Dupers Info"
+        DupersInfo.TextColor3 = Color3.fromRGB(255, 255, 255)
+        DupersInfo.TextSize = 14.000
+        
+        UICorner_3.Parent = DupersInfo
+        
+        UIGridLayout.Parent = TopBar
+        UIGridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        UIGridLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+        UIGridLayout.CellSize = UDim2.new(0, 115, 0, 35)
+        
+        SetUpFrame.Name = "SetUpFrame"
+        SetUpFrame.Parent = ExamplePage
+        SetUpFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        SetUpFrame.BackgroundTransparency = 1.000
+        SetUpFrame.Position = UDim2.new(0.00279329601, 0, 0.25460124, 0)
+        SetUpFrame.Size = UDim2.new(0, 357, 0, 243)
+        
+        Textbox.Name = "Textbox"
+        Textbox.Parent = SetUpFrame
+        Textbox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        Textbox.BorderSizePixel = 0
+        Textbox.Position = UDim2.new(0.2464986, 0, 0.847736597, 0)
+        Textbox.Size = UDim2.new(0, 180, 0, 30)
+        Textbox.Font = Enum.Font.Nunito
+        Textbox.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
+        Textbox.PlaceholderText = "UserId / Username"
+        Textbox.Text = ""
+        Textbox.TextColor3 = Color3.fromRGB(178, 178, 178)
+        Textbox.TextSize = 16.000
+        
+        Add.Name = "Add"
+        Add.Parent = SetUpFrame
+        Add.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        Add.BorderSizePixel = 0
+        Add.Position = UDim2.new(0.770308137, 0, 0.847736657, 0)
+        Add.Size = UDim2.new(0, 74, 0, 30)
+        Add.Font = Enum.Font.GothamBlack
+        Add.Text = "Add"
+        Add.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Add.TextSize = 14.000
+        
+        Remove.Name = "Remove"
+        Remove.Parent = SetUpFrame
+        Remove.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        Remove.BorderSizePixel = 0
+        Remove.Position = UDim2.new(0.0224089622, 0, 0.847736657, 0)
+        Remove.Size = UDim2.new(0, 74, 0, 30)
+        Remove.Font = Enum.Font.GothamBlack
+        Remove.Text = "Remove"
+        Remove.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Remove.TextSize = 14.000
+        
+        ConfirmSettings.Name = "ConfirmSettings"
+        ConfirmSettings.Parent = SetUpFrame
+        ConfirmSettings.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        ConfirmSettings.BorderSizePixel = 0
+        ConfirmSettings.Position = UDim2.new(0.542016804, 0, 0.683127582, 0)
+        ConfirmSettings.Size = UDim2.new(0, 120, 0, 30)
+        ConfirmSettings.Font = Enum.Font.GothamBlack
+        ConfirmSettings.Text = "ConfirmSettings"
+        ConfirmSettings.TextColor3 = Color3.fromRGB(255, 255, 255)
+        ConfirmSettings.TextSize = 14.000
+        
+        UICorner_4.Parent = ConfirmSettings
+        
+        Fps.Name = "Fps"
+        Fps.Parent = SetUpFrame
+        Fps.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        Fps.Position = UDim2.new(0.704481781, 0, 0.493827164, 0)
+        Fps.Size = UDim2.new(0, 92, 0, 33)
+        Fps.Font = Enum.Font.SourceSans
+        Fps.PlaceholderText = "15 [ Default ]"
+        Fps.Text = ""
+        Fps.TextColor3 = Color3.fromRGB(0, 0, 0)
+        Fps.TextSize = 20.000
+        Fps.TextWrapped = true
+        
+        FPSCAPTITLE.Name = "FPSCAPTITLE"
+        FPSCAPTITLE.Parent = SetUpFrame
+        FPSCAPTITLE.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        FPSCAPTITLE.BackgroundTransparency = 1.000
+        FPSCAPTITLE.Position = UDim2.new(0.49579832, 0, 0.493827164, 0)
+        FPSCAPTITLE.Size = UDim2.new(0, 69, 0, 33)
+        FPSCAPTITLE.Font = Enum.Font.GothamBlack
+        FPSCAPTITLE.Text = "FPS CAP :"
+        FPSCAPTITLE.TextColor3 = Color3.fromRGB(255, 255, 255)
+        FPSCAPTITLE.TextSize = 14.000
+        
+        Frame.Parent = SetUpFrame
+        Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        Frame.BackgroundTransparency = 0.500
+        Frame.Size = UDim2.new(0, 349, 0, 100)
+        
+        CrasherUsername.Name = "CrasherUsername"
+        CrasherUsername.Parent = Frame
+        CrasherUsername.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        CrasherUsername.Position = UDim2.new(0.387327701, 0, 0.0729217529, 0)
+        CrasherUsername.Size = UDim2.new(0, 202, 0, 26)
+        CrasherUsername.Font = Enum.Font.SourceSans
+        CrasherUsername.PlaceholderText = "Username / UserId"
+        CrasherUsername.Text = ""
+        CrasherUsername.TextColor3 = Color3.fromRGB(0, 0, 0)
+        CrasherUsername.TextSize = 20.000
+        CrasherUsername.TextWrapped = true
+        
+        CRASHERTITLE.Name = "CRASHERTITLE"
+        CRASHERTITLE.Parent = Frame
+        CRASHERTITLE.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        CRASHERTITLE.BackgroundTransparency = 1.000
+        CRASHERTITLE.Position = UDim2.new(0.0229226369, 0, 0.0669296235, 0)
+        CRASHERTITLE.Size = UDim2.new(0, 114, 0, 26)
+        CRASHERTITLE.Font = Enum.Font.GothamBlack
+        CRASHERTITLE.Text = "Crasher Name :"
+        CRASHERTITLE.TextColor3 = Color3.fromRGB(255, 255, 255)
+        CRASHERTITLE.TextSize = 14.000
+        
+        CrashAtCash.Name = "CrashAtCash"
+        CrashAtCash.Parent = Frame
+        CrashAtCash.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        CrashAtCash.Position = UDim2.new(0.387327701, 0, 0.372921765, 0)
+        CrashAtCash.Size = UDim2.new(0, 202, 0, 26)
+        CrashAtCash.Font = Enum.Font.SourceSans
+        CrashAtCash.PlaceholderText = "$50,000 [ Default ]"
+        CrashAtCash.Text = ""
+        CrashAtCash.TextColor3 = Color3.fromRGB(0, 0, 0)
+        CrashAtCash.TextSize = 20.000
+        CrashAtCash.TextWrapped = true
+        
+        CRASHERTITLE_2.Name = "CRASHERTITLE"
+        CRASHERTITLE_2.Parent = Frame
+        CRASHERTITLE_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        CRASHERTITLE_2.BackgroundTransparency = 1.000
+        CRASHERTITLE_2.Position = UDim2.new(0.0229226369, 0, 0.36692965, 0)
+        CRASHERTITLE_2.Size = UDim2.new(0, 114, 0, 26)
+        CRASHERTITLE_2.Font = Enum.Font.GothamBlack
+        CRASHERTITLE_2.Text = "Crash at cash :"
+        CRASHERTITLE_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+        CRASHERTITLE_2.TextSize = 14.000
+        
+        CrashAfterSeconds.Name = "CrashAfterSeconds"
+        CrashAfterSeconds.Parent = Frame
+        CrashAfterSeconds.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        CrashAfterSeconds.Position = UDim2.new(0.387327701, 0, 0.672921777, 0)
+        CrashAfterSeconds.Size = UDim2.new(0, 202, 0, 26)
+        CrashAfterSeconds.Font = Enum.Font.SourceSans
+        CrashAfterSeconds.PlaceholderText = "Never  [ Default ]"
+        CrashAfterSeconds.Text = ""
+        CrashAfterSeconds.TextColor3 = Color3.fromRGB(0, 0, 0)
+        CrashAfterSeconds.TextSize = 20.000
+        CrashAfterSeconds.TextWrapped = true
+        
+        CRASHERTITLE_3.Name = "CRASHERTITLE"
+        CRASHERTITLE_3.Parent = Frame
+        CRASHERTITLE_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        CRASHERTITLE_3.BackgroundTransparency = 1.000
+        CRASHERTITLE_3.Position = UDim2.new(0.0229226369, 0, 0.666929662, 0)
+        CRASHERTITLE_3.Size = UDim2.new(0, 114, 0, 26)
+        CRASHERTITLE_3.Font = Enum.Font.GothamBlack
+        CRASHERTITLE_3.Text = "Crash after ( s )"
+        CRASHERTITLE_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+        CRASHERTITLE_3.TextSize = 14.000
+        
+        NormalGFX.Name = "Normal GFX"
+        NormalGFX.Parent = SetUpFrame
+        NormalGFX.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        NormalGFX.BorderSizePixel = 0
+        NormalGFX.Position = UDim2.new(0.137254909, 0, 0.448559672, 0)
+        NormalGFX.Size = UDim2.new(0, 111, 0, 24)
+        NormalGFX.Font = Enum.Font.GothamBlack
+        NormalGFX.Text = "Normal GFX"
+        NormalGFX.TextColor3 = Color3.fromRGB(255, 255, 255)
+        NormalGFX.TextSize = 14.000
+        
+        Enabled.Name = "Enabled"
+        Enabled.Parent = NormalGFX
+        Enabled.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Enabled.BackgroundTransparency = 1.000
+        Enabled.Position = UDim2.new(-0.306306303, 0, 0, 0)
+        Enabled.Size = UDim2.new(0, 24, 0, 24)
+        Enabled.Visible = false
+        Enabled.ZIndex = -1
+        Enabled.Image = "rbxassetid://419589574"
+        
+        Disabled.Name = "Disabled"
+        Disabled.Parent = NormalGFX
+        Disabled.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Disabled.BackgroundTransparency = 1.000
+        Disabled.Position = UDim2.new(-0.306306303, 0, 0, 0)
+        Disabled.Size = UDim2.new(0, 24, 0, 24)
+        Disabled.Image = "rbxassetid://2761831318"
+        
+        LowGFX.Name = "LowGFX"
+        LowGFX.Parent = SetUpFrame
+        LowGFX.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        LowGFX.BorderSizePixel = 0
+        LowGFX.Position = UDim2.new(0.137254909, 0, 0.579089522, 0)
+        LowGFX.Size = UDim2.new(0, 111, 0, 24)
+        LowGFX.Font = Enum.Font.GothamBlack
+        LowGFX.Text = "Low GFX"
+        LowGFX.TextColor3 = Color3.fromRGB(255, 255, 255)
+        LowGFX.TextSize = 14.000
+        
+        Disabled_2.Name = "Disabled"
+        Disabled_2.Parent = LowGFX
+        Disabled_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Disabled_2.BackgroundTransparency = 1.000
+        Disabled_2.Position = UDim2.new(-0.306306303, 0, 0, 0)
+        Disabled_2.Size = UDim2.new(0, 24, 0, 24)
+        Disabled_2.Visible = false
+        Disabled_2.Image = "rbxassetid://2761831318"
+        
+        Enabled_2.Name = "Enabled"
+        Enabled_2.Parent = LowGFX
+        Enabled_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Enabled_2.BackgroundTransparency = 1.000
+        Enabled_2.Position = UDim2.new(-0.306306303, 0, 0, 0)
+        Enabled_2.Size = UDim2.new(0, 24, 0, 24)
+        Enabled_2.ZIndex = -1
+        Enabled_2.Image = "rbxassetid://419589574"
+        
+        ReallyLowGFX.Name = "ReallyLowGFX"
+        ReallyLowGFX.Parent = SetUpFrame
+        ReallyLowGFX.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        ReallyLowGFX.BorderSizePixel = 0
+        ReallyLowGFX.Position = UDim2.new(0.137254909, 0, 0.70588994, 0)
+        ReallyLowGFX.Size = UDim2.new(0, 111, 0, 24)
+        ReallyLowGFX.Font = Enum.Font.GothamBlack
+        ReallyLowGFX.Text = "Really Low GFX"
+        ReallyLowGFX.TextColor3 = Color3.fromRGB(255, 255, 255)
+        ReallyLowGFX.TextSize = 14.000
+        
+        Disabled_3.Name = "Disabled"
+        Disabled_3.Parent = ReallyLowGFX
+        Disabled_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Disabled_3.BackgroundTransparency = 1.000
+        Disabled_3.Position = UDim2.new(-0.306306303, 0, 0, 0)
+        Disabled_3.Size = UDim2.new(0, 24, 0, 24)
+        Disabled_3.Image = "rbxassetid://2761831318"
+        
+        Enabled_3.Name = "Enabled"
+        Enabled_3.Parent = ReallyLowGFX
+        Enabled_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Enabled_3.BackgroundTransparency = 1.000
+        Enabled_3.Position = UDim2.new(-0.306306303, 0, 0, 0)
+        Enabled_3.Size = UDim2.new(0, 24, 0, 24)
+        Enabled_3.Visible = false
+        Enabled_3.ZIndex = -1
+        Enabled_3.Image = "rbxassetid://419589574"
+        
+        Decoration.Name = "Decoration"
+        Decoration.Parent = ExamplePage
+        Decoration.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Decoration.BackgroundTransparency = 0.900
+        Decoration.Position = UDim2.new(0.111731842, 0, 0.00920245424, 0)
+        Decoration.Size = UDim2.new(0, 277, 0, 34)
+        
+        AccountInfos.Name = "AccountInfos"
+        AccountInfos.Parent = ExamplePage
+        AccountInfos.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        AccountInfos.BackgroundTransparency = 1.000
+        AccountInfos.Position = UDim2.new(0.00279329601, 0, 0.25460124, 0)
+        AccountInfos.Size = UDim2.new(0, 357, 0, 243)
+        AccountInfos.Visible = false
+        
+        TextButton.Parent = AccountInfos
+        TextButton.BackgroundColor3 = Color3.fromRGB(107, 107, 107)
+        TextButton.Position = UDim2.new(0.287114859, 0, 0.847736657, 0)
+        TextButton.Size = UDim2.new(0, 150, 0, 27)
+        TextButton.Font = Enum.Font.GothamBold
+        TextButton.Text = " [ Refresh List ]"
+        TextButton.TextColor3 = Color3.fromRGB(250, 250, 250)
+        TextButton.TextScaled = true
+        TextButton.TextSize = 14.000
+        TextButton.TextWrapped = true
+        
+        UICorner_5.Parent = TextButton
+        
+        ScrollingFrame.Parent = AccountInfos
+        ScrollingFrame.Active = true
+        ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        ScrollingFrame.BackgroundTransparency = 1.000
+        ScrollingFrame.BorderSizePixel = 0
+        ScrollingFrame.Position = UDim2.new(0.00140056026, 0, -0.00205761311, 0)
+        ScrollingFrame.Size = UDim2.new(0, 354, 0, 243)
+        ScrollingFrame.ScrollBarThickness = 6
+        
+        
+        
+        UIGridLayout_2.Parent = ScrollingFrame
+        UIGridLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
+        UIGridLayout_2.CellPadding = UDim2.new(0, 0, 0, 0)
+        UIGridLayout_2.CellSize = UDim2.new(0, 177, 0, 44)
+        
+        HelpFrame.Name = "HelpFrame"
+        HelpFrame.Parent = ExamplePage
+        HelpFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+        HelpFrame.BorderSizePixel = 0
+        HelpFrame.Position = UDim2.new(-0.684357524, 0, 0.0674846619, 0)
+        HelpFrame.Size = UDim2.new(0, 245, 0, 283)
+        HelpFrame.Visible = false
+        
+        HelpMain.Name = "HelpMain"
+        HelpMain.Parent = HelpFrame
+        HelpMain.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        HelpMain.BorderSizePixel = 0
+        HelpMain.Position = UDim2.new(0.0408163257, 0, 0.0989399329, 0)
+        HelpMain.Size = UDim2.new(0, 227, 0, 248)
+        
+        HelpTitle.Name = "HelpTitle"
+        HelpTitle.Parent = HelpMain
+        HelpTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle.BackgroundTransparency = 1.000
+        HelpTitle.Position = UDim2.new(0, 0, -0.0967741907, 0)
+        HelpTitle.Size = UDim2.new(0, 227, 0, 24)
+        HelpTitle.Font = Enum.Font.SourceSans
+        HelpTitle.Text = "How to Set up"
+        HelpTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle.TextScaled = true
+        HelpTitle.TextSize = 14.000
+        HelpTitle.TextStrokeTransparency = 0.000
+        HelpTitle.TextWrapped = true
+        
+        HelpTitle_2.Name = "HelpTitle"
+        HelpTitle_2.Parent = HelpMain
+        HelpTitle_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle_2.BackgroundTransparency = 1.000
+        HelpTitle_2.Position = UDim2.new(0, 0, 0.00806451589, 0)
+        HelpTitle_2.Size = UDim2.new(0, 227, 0, 50)
+        HelpTitle_2.Font = Enum.Font.SourceSans
+        HelpTitle_2.Text = "1 ) Add all the accounts that you would like to be \"Droppers\" at the bottom of the Set Up Page"
+        HelpTitle_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle_2.TextSize = 16.000
+        HelpTitle_2.TextStrokeTransparency = 0.000
+        HelpTitle_2.TextWrapped = true
+        HelpTitle_2.TextXAlignment = Enum.TextXAlignment.Left
+        
+        HelpTitle_3.Name = "HelpTitle"
+        HelpTitle_3.Parent = HelpMain
+        HelpTitle_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle_3.BackgroundTransparency = 1.000
+        HelpTitle_3.Position = UDim2.new(-0.00440528616, 0, 0.209677413, 0)
+        HelpTitle_3.Size = UDim2.new(0, 227, 0, 104)
+        HelpTitle_3.Font = Enum.Font.SourceSans
+        HelpTitle_3.Text = "2 ) Choose which account you want to be a crasher ( must be a dropper ) and then choose how much cash  you would like them to crash at ( the crashers cash )or how long to wait before crashing"
+        HelpTitle_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle_3.TextSize = 16.000
+        HelpTitle_3.TextStrokeTransparency = 0.000
+        HelpTitle_3.TextWrapped = true
+        
+        HelpTitle_4.Name = "HelpTitle"
+        HelpTitle_4.Parent = HelpMain
+        HelpTitle_4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle_4.BackgroundTransparency = 1.000
+        HelpTitle_4.Position = UDim2.new(-0.00440528616, 0, 0.616935492, 0)
+        HelpTitle_4.Size = UDim2.new(0, 227, 0, 36)
+        HelpTitle_4.Font = Enum.Font.SourceSans
+        HelpTitle_4.Text = "3 ) Select  to use Normal, Low or Super Low GFX / Set custom FPS cap"
+        HelpTitle_4.TextColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle_4.TextSize = 16.000
+        HelpTitle_4.TextStrokeTransparency = 0.000
+        HelpTitle_4.TextWrapped = true
+        
+        HelpTitle_5.Name = "HelpTitle"
+        HelpTitle_5.Parent = HelpMain
+        HelpTitle_5.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle_5.BackgroundTransparency = 1.000
+        HelpTitle_5.Position = UDim2.new(-0.00440528616, 0, 0.762096822, 0)
+        HelpTitle_5.Size = UDim2.new(0, 227, 0, 50)
+        HelpTitle_5.Font = Enum.Font.SourceSans
+        HelpTitle_5.Text = "4 ) Once all settings are configured you can start joining on your duping accounts"
+        HelpTitle_5.TextColor3 = Color3.fromRGB(255, 255, 255)
+        HelpTitle_5.TextSize = 16.000
+        HelpTitle_5.TextStrokeTransparency = 0.000
+        HelpTitle_5.TextWrapped = true
+        
+        ImageButton.Parent = ExamplePage
+        ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        ImageButton.BackgroundTransparency = 1.000
+        ImageButton.Position = UDim2.new(0.0251396652, 0, 0.0245398767, 0)
+        ImageButton.Size = UDim2.new(0, 24, 0, 25)
+        ImageButton.Image = "rbxassetid://155149625"
+        
+        UICorner_6.Parent = SimplySwag
+        
+        MainList.Name = "MainList"
+        MainList.Parent = ExamplePage
+        MainList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        MainList.BackgroundTransparency = 1.000
+        MainList.Position = UDim2.new(1, 0, 0, 0)
+        MainList.Size = UDim2.new(0, 174, 0, 320)
+    
+        List.Name = "List"
+        List.Parent = MainList
+        List.Active = true
+        List.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+        List.BorderSizePixel = 0
+        List.Position = UDim2.new(-0.0146642029, 0, -0.00296473503, 0)
+        List.Size = UDim2.new(0, 176, 0, 276)
+        List.ScrollBarThickness = 4
+        List.ScrollingDirection = 'Y'
+    
+        UIListLayout.Parent = List
+        UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        
+        local function PlayerAdd(Name)
+            local TextLabel = Instance.new("TextButton")
+    
+            TextLabel.Parent = List
+            TextLabel.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
+            TextLabel.Position = UDim2.new(0.0142045459, 0, 0, 0)
+            TextLabel.Size = UDim2.new(0, 173, 0, 30)
+            TextLabel.Font = Enum.Font.SourceSansBold
+            TextLabel.LineHeight = 0.800
+            TextLabel.Text = Name
+            TextLabel.Name = Name
+            TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+            TextLabel.TextSize = 16.000
+            TextLabel.MouseButton1Click:Connect(function()
+                for i,v in pairs(game.Players:GetChildren()) do
+                    if v.Name == Name or v.UserId == Name then
+                        Player.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
+                    end
+                end
+            end)
+    
+            local contentsize = TextLabel.Parent:FindFirstChildOfClass('UIListLayout').AbsoluteContentSize
+            TextLabel.Parent.CanvasSize = UDim2.new(0,contentsize.X,0,contentsize.Y)
+        end
+        
+        DupersInfo.MouseButton1Click:Connect(function()
+            SetUpFrame.Visible = false
+            AccountInfos.Visible = true
+        end)
+        SetUp.MouseButton1Click:Connect(function()
+            SetUpFrame.Visible = true
+            AccountInfos.Visible = false
+        end)
+        
+        local formatNumber = (function (n)
+            n = tostring(n)
+            return n:reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+        end)
+        
+        local function AddDuper(Name, Cash, ID)
+            local PlayersName = Instance.new("Frame")
+            local PlayersImage = Instance.new("ImageLabel")
+            local NameCash = Instance.new("TextLabel")
+            
+            PlayersName.Name = Name
+            PlayersName.Parent = ScrollingFrame
+            PlayersName.BackgroundColor3 = Color3.fromRGB(122, 122, 122)
+            PlayersName.Size = UDim2.new(0, 177, 0, 47)
+            
+            PlayersImage.Name = Name
+            PlayersImage.Parent = PlayersName
+            PlayersImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            PlayersImage.BackgroundTransparency = 1.000
+            PlayersImage.BorderSizePixel = 0
+            PlayersImage.Size = UDim2.new(0, 44, 0, 44)
+            PlayersImage.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+            
+            NameCash.Name = "NameCash"
+            NameCash.Parent = PlayersName
+            NameCash.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            NameCash.BackgroundTransparency = 1.000
+            NameCash.Position = UDim2.new(0.248587564, 0, 0, 0)
+            NameCash.Size = UDim2.new(0, 133, 0, 44)
+            NameCash.Font = Enum.Font.SourceSansSemibold
+            NameCash.Text = Name .. '\n$' ..  formatNumber(Cash)
+            NameCash.TextColor3 = Color3.fromRGB(0, 0, 0)
+            NameCash.TextSize = 14.000
+            NameCash.TextWrapped = true
+            
+            coroutine.resume(coroutine.create(function()
+                local TargetId = ID
+                local ThumbType = Enum.ThumbnailType.HeadShot
+                local ThumbSize = Enum.ThumbnailSize.Size420x420
+                local Content, IsReady = game:GetService('Players'):GetUserThumbnailAsync(TargetId, ThumbType, ThumbSize)
+                PlayersImage.Image = Content
+            end))
+            
+        end
+        
+        TextButton.MouseButton1Click:Connect(function() --\\ Load all people 
+            for i,v in pairs(ScrollingFrame:GetChildren()) do 
+                if v:IsA('Frame') then
+                    v:Destroy()
+                end
+            end
+            for _, Plr in pairs(game.Players:GetChildren()) do
+                if table.find(DUPERS, Plr.Name) or table.find(DUPERS, tostring(Plr.UserId)) then
+                    local s,e = pcall(function()
+                        AddDuper(Plr.Name, Plr.DataFolder.Currency.Value, Plr.UserId)
+                    end) if e then print(e) end
+                end
+            end
+        end)
+        
+        TextButton_2.Parent = MainList
+        TextButton_2.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+        TextButton_2.BorderSizePixel = 0
+        TextButton_2.Position = UDim2.new(-0.0146642029, 0, 0.881712139, 0)
+        TextButton_2.Size = UDim2.new(0, 176, 0, 39)
+        TextButton_2.Font = Enum.Font.GothamBold
+        TextButton_2.Text = "Save List"
+        TextButton_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TextButton_2.TextSize = 14.000
+        TextButton_2.Visible = false
+        
+        ImageButton.MouseButton1Click:Connect(function()
+            if HelpFrame.Visible == false then
+                HelpFrame.Visible = true
+            else
+                HelpFrame.Visible = false
+            end
+        end)
+        
+        local function Update()
+            for i,v in pairs(List:GetChildren()) do
+               if v:IsA('TextLabel') then v:Destroy() end 
+            end
+            local s,e = pcall(function()
+            for i,v in pairs(DUPERS) do
+                PlayerAdd(v)
+            end
+            end) if e then print(e) end
+        end
+        Update()
+        Add.MouseButton1Click:Connect(function()
+            local PlayerInfo = table.find(DUPERS, Textbox.Text)
+            if not PlayerInfo and #Textbox.Text > 0 then
+                table.insert(DUPERS, Textbox.Text)
+                print('successfully added' .. Textbox.Text)
+                Update()
+            end
+        end)
+            
+        Remove.MouseButton1Click:Connect(function()
+            local PlayerInfo = table.find(DUPERS, Textbox.Text)
+            if PlayerInfo and #Textbox.Text > 0 then
+                table.remove(DUPERS, PlayerInfo)
+                print('successfully removed' .. Textbox.Text)
+                Update()
+            end
+        end)
+            
+        CrasherUsername.Text = tostring(DATA.Crasher)
+        CrashAtCash.Text = tostring(DATA.CrashAt)
+        CrashAfterSeconds.Text = tostring(DATA.CrashAfter)
+        Fps.Text = tostring(DATA.FPS)
+        
+        if DATA.GFX == 'NormalGFX' then
+            DATA.GFX = 'NormalGFX'
+            NormalGFX.Enabled.Visible = true
+            NormalGFX.Disabled.Visible = false
+            ReallyLowGFX.Disabled.Visible = true
+            ReallyLowGFX.Enabled.Visible = false
+            LowGFX.Disabled.Visible = true
+            LowGFX.Enabled.Visible = false 
+        elseif DATA.GFX == 'LowGFX' then
+            DATA.GFX = 'LowGFX'
+            NormalGFX.Enabled.Visible = false
+            NormalGFX.Disabled.Visible = true
+            ReallyLowGFX.Disabled.Visible = true
+            ReallyLowGFX.Enabled.Visible = false
+            LowGFX.Disabled.Visible = false
+            LowGFX.Enabled.Visible = true
+        else
+            DATA.GFX = 'ReallyLowGFX'
+            NormalGFX.Enabled.Visible = false
+            NormalGFX.Disabled.Visible = true
+            ReallyLowGFX.Disabled.Visible = false
+            ReallyLowGFX.Enabled.Visible = true
+            LowGFX.Disabled.Visible = true
+            LowGFX.Enabled.Visible = false
+        end
+        
+        local s,e = pcall(function()
+            NormalGFX.MouseButton1Click:Connect(function()
+                DATA.GFX = 'NormalGFX'
+                NormalGFX.Enabled.Visible = true
+                NormalGFX.Disabled.Visible = false
+                ReallyLowGFX.Disabled.Visible = true
+                ReallyLowGFX.Enabled.Visible = false
+                LowGFX.Disabled.Visible = true
+                LowGFX.Enabled.Visible = false
+            end)
+            LowGFX.MouseButton1Click:Connect(function()
+                DATA.GFX = 'LowGFX'
+                NormalGFX.Enabled.Visible = false
+                NormalGFX.Disabled.Visible = true
+                ReallyLowGFX.Disabled.Visible = true
+                ReallyLowGFX.Enabled.Visible = false
+                LowGFX.Disabled.Visible = false
+                LowGFX.Enabled.Visible = true
+            end)
+            ReallyLowGFX.MouseButton1Click:Connect(function()
+                DATA.GFX = 'ReallyLowGFX'
+                NormalGFX.Enabled.Visible = false
+                NormalGFX.Disabled.Visible = true
+                ReallyLowGFX.Disabled.Visible = false
+                ReallyLowGFX.Enabled.Visible = true
+                LowGFX.Disabled.Visible = true
+                LowGFX.Enabled.Visible = false
+            end)
+    
+            ConfirmSettings.MouseButton1Click:Connect(function()
+                local s,e = pcall(function()
+                    if #CrashAtCash.Text > 0 then
+                        writefile("DupeData/CrashAtCash.txt", tostring(CrashAtCash.Text))
+                    else
+                        writefile("DupeData/CrashAtCash.txt", '5000')
+                    end
+                    if #CrasherUsername.Text > 0 then
+                        writefile("DupeData/Crasher.txt", tostring(CrasherUsername.Text))
+                    else
+                        writefile("DupeData/Crasher.txt", tostring('nil\nil'))
+                    end
+                    if #CrashAfterSeconds.Text > 0 then
+                        writefile("DupeData/CrashAfter.txt", tostring(CrashAfterSeconds.Text)) 
+                    else
+                        writefile("DupeData/CrashAfter.txt", tostring('999999999999')) 
+                    end
+                    writefile("DupeData/GFX.txt", DATA.GFX) 
+                    if #Fps.Text > 0 then
+                        writefile("DupeData/FPS.txt", tostring(Fps.Text)) 
+                    else
+                        writefile("DupeData/FPS.txt", tostring('15')) 
+                    end
+                    writefile("DupeData/DuperList.txt", table.concat(DUPERS, '/')) 
+                    print('Data Saved,')
+                    announce('Saved Data Successfully', 'accounts that join will apply these settings', 5)
+                end) if e then print('Error saving data : ' .. e) end
+            end)
+        end) if e then print(e) end
+    end
+end

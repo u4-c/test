@@ -1,0 +1,116 @@
+
+local AnimationStealer = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local Color = Instance.new("Frame")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local Title_2 = Instance.new("TextLabel")
+local CloseGui = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
+local UIListLayout = Instance.new('UIListLayout')
+
+AnimationStealer.Name = "AnimationStealer"
+AnimationStealer.Parent = game.CoreGui
+AnimationStealer.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = AnimationStealer
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.772213221, 0, 0.255977452, 0)
+MainFrame.Size = UDim2.new(0, 228, 0, 328)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1.000
+Title.Position = UDim2.new(0.0438596494, 0, 0.0548780486, 0)
+Title.Size = UDim2.new(0, 207, 0, 29)
+Title.Font = Enum.Font.GothamBlack
+Title.Text = "( Click the animation to setclipboard )"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 10.000
+Title.TextWrapped = true
+
+Color.Name = "Color"
+Color.Parent = MainFrame
+Color.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Color.BorderSizePixel = 0
+Color.Position = UDim2.new(0.0438596457, 0, 0.14329268, 0)
+Color.Size = UDim2.new(0, 207, 0, 270)
+
+ScrollingFrame.Parent = Color
+ScrollingFrame.Active = true
+ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScrollingFrame.BackgroundTransparency = 1.000
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.Size = UDim2.new(0, 207, 0, 270)
+ScrollingFrame.ScrollBarThickness = 2
+ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(10,10,10)
+
+Title_2.Name = "Title"
+Title_2.Parent = MainFrame
+Title_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Title_2.BackgroundTransparency = 1.000
+Title_2.Position = UDim2.new(0.0438596494, 0, 0, 0)
+Title_2.Size = UDim2.new(0, 207, 0, 34)
+Title_2.Font = Enum.Font.GothamBlack
+Title_2.Text = "Animation Grabber"
+Title_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title_2.TextSize = 15.000
+Title_2.TextWrapped = true
+
+CloseGui.Name = "CloseGui"
+CloseGui.Parent = MainFrame
+CloseGui.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+CloseGui.BorderSizePixel = 0
+CloseGui.Position = UDim2.new(0.934210479, 0, 0, 0)
+CloseGui.Size = UDim2.new(0, 15, 0, 15)
+CloseGui.AutoButtonColor = false
+CloseGui.Selected = true
+CloseGui.Font = Enum.Font.Nunito
+CloseGui.Text = ""
+CloseGui.TextColor3 = Color3.fromRGB(0, 0, 0)
+CloseGui.TextSize = 12.000
+CloseGui.MouseButton1Click:Connect(function()
+    AnimationStealer:Destroy()
+end)
+
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = CloseGui
+
+UIListLayout.Parent = ScrollingFrame
+
+local Target = game.Players.LocalPlayer.Name
+if getgenv().Target then
+    Target = getgenv().Target
+end
+
+local Logged = {}
+while AnimationStealer do
+    pcall(function()
+        for _,v in pairs(game.Players[Target].Character:FindFirstChildOfClass('Humanoid'):GetPlayingAnimationTracks()) do
+            if not table.find(Logged, v.Animation.AnimationId) and not string.find(v.Animation.AnimationId, 'roblox.com/asset') then
+                table.insert(Logged, v.Animation.AnimationId)
+                
+                local TextButton = Instance.new("TextButton")
+                TextButton.Parent = ScrollingFrame
+                TextButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+                TextButton.BorderSizePixel = 0
+                TextButton.Size = UDim2.new(0, 207, 0, 37)
+                TextButton.Font = Enum.Font.GothamBold
+                TextButton.Text = v.Name .. '\n' .. v.Animation.AnimationId
+                TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextButton.TextSize = 12.000
+                TextButton.MouseButton1Click:Connect(function()
+                    setclipboard(v.Animation.AnimationId)
+                end)
+
+                ScrollingFrame.CanvasSize = UDim2.new(0,ScrollingFrame:FindFirstChildOfClass('UIListLayout').AbsoluteContentSize.X,0,ScrollingFrame:FindFirstChildOfClass('UIListLayout').AbsoluteContentSize.Y)
+            end
+        end
+        game:GetService('RunService').Heartbeat:Wait()
+    end)
+end
